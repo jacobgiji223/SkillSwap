@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Mail, Lock, User, Eye, EyeOff } from 'lucide-react'
+import { Mail, Lock, User, Eye, EyeOff, Chrome } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 import { Button, Input } from '../ui'
 
@@ -9,9 +9,10 @@ interface SignupFormProps {
 }
 
 const SignupForm: React.FC<SignupFormProps> = ({ onToggleMode }) => {
-  const { signUp } = useAuth()
+  const { signUp, signInWithGoogle } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [googleLoading, setGoogleLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   const [formData, setFormData] = useState({
@@ -20,6 +21,22 @@ const SignupForm: React.FC<SignupFormProps> = ({ onToggleMode }) => {
     password: '',
     confirmPassword: ''
   })
+
+  const handleGoogleSignIn = async () => {
+    setGoogleLoading(true)
+    setError('')
+
+    try {
+      const { error } = await signInWithGoogle()
+      if (error) {
+        setError(error.message)
+      }
+    } catch (err) {
+      setError('An unexpected error occurred')
+    } finally {
+      setGoogleLoading(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -108,6 +125,27 @@ const SignupForm: React.FC<SignupFormProps> = ({ onToggleMode }) => {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Google Sign In Button */}
+        <Button
+          type="button"
+          onClick={handleGoogleSignIn}
+          loading={googleLoading}
+          variant="outline"
+          className="w-full border-gray-300 hover:bg-gray-50"
+        >
+          <Chrome size={20} className="mr-2 text-blue-600" />
+          Continue with Google
+        </Button>
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300" />
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-white text-gray-500">Or create account with email</span>
+          </div>
+        </div>
+
         <div className="relative">
           <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
           <Input
