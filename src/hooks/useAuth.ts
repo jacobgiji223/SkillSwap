@@ -29,7 +29,7 @@ export const useAuth = () => {
           .from('profiles')
           .select('*')
           .eq('id', session.user.id)
-          .maybeSingle()
+          .single()
 
         setState({
           user: session.user,
@@ -53,7 +53,7 @@ export const useAuth = () => {
             .from('profiles')
             .select('*')
             .eq('id', session.user.id)
-            .maybeSingle()
+            .single()
 
           setState({
             user: session.user,
